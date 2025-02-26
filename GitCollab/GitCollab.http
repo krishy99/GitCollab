@@ -1,0 +1,6 @@
+@GitCollab_HostAddress = http://localhost:5264
+
+GET {{GitCollab_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
