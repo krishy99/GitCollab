@@ -1,0 +1,18 @@
+name: DotNetApiPush
+on:
+  workflow_dispatch
+jobs:
+  build:
+   runs-on: windows-latest
+   steps:
+     - uses: actions/checkout@v3
+     - name: build-app
+       uses: actions/setup-dotnet@v3
+       with:
+         dotnet-version: 8.0.x
+     - name: Install dependencies
+       run: dotnet restore ./GitCollab/GitCollab.csproj
+     - name: Build
+       run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
+      
+   
