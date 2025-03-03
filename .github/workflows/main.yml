@@ -1,6 +1,9 @@
 name: DotNetApiPush
 on:
   workflow_dispatch
+env:
+  AZURE_WEBAPP_NAME: "GitActionApiApp"
+
 jobs:
   build:
    runs-on: windows-latest
@@ -15,5 +18,8 @@ jobs:
        run: dotnet restore ./GitCollab/GitCollab.csproj
      - name: Build
        run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
-      
+     - name: Publish
+       run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ./publish
+
+     
    
