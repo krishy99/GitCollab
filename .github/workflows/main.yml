@@ -2,7 +2,7 @@ name: DotNetApiPush
 on:
   workflow_dispatch
 env:
-  AZURE_WEBAPP_NAME: "GitActionApiApp"
+  AZURE_WEBAPP_NAME: "GitActionAPI"
 
 jobs:
   build:
