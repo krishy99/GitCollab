@@ -1,0 +1,32 @@
+name: DotNetApiPush
+on:
+  workflow_dispatch
+env:
+  AZURE_WEBAPP_NAME: "GitActionApiApp"
+
+jobs:
+  build:
+   runs-on: windows-latest
+   steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
+     - name: build-app
+       uses: actions/setup-dotnet@v3
+       with:
+         dotnet-version: 8.0.x
+     - name: Install dependencies
+       run: dotnet restore ./GitCollab/GitCollab.csproj
+     - name: Build
+       run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
+     - name: Publish
+       run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ./publish
+
+     - name: Deploy
+       uses: azure/webapps-deploy@v2
+       with:
+         app-name: ${{env.AZURE_WEBAPP_NAME}}
+         publish-profile: ${{secrets.AZURE_PUBLISH_KEY}}
+         package: ./publish
+
+     
+   
