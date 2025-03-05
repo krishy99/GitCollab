@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using GitCollab.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GitCollab.Controllers
@@ -8,9 +9,10 @@ namespace GitCollab.Controllers
     public class ValuesController : ControllerBase
     {
         [HttpGet]
-        public ActionResult GetEmployees()
+        public ActionResult<User> GetUsers()
         {
-            return Ok();
+
+            return Ok(new User { Id = 1, Name = "kRISHNA", Age = 20});
         }
     }
 }
