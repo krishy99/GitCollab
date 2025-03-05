@@ -8,11 +8,22 @@ namespace GitCollab.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
-        [HttpGet]
-        public ActionResult<User> GetUsers()
+        [HttpGet("{id}")]
+        public IActionResult GetUsers(int id)
         {
+            var user = new List<User> {
+                new User{ Id = 1, Name = "kRISHNA", Age = 20 },
+                new User { Id = 2, Name = "Raj", Age = 21 }
+                };
 
-            return Ok(new User { Id = 1, Name = "kRISHNA", Age = 20});
+            var found = user.Find(e => e.Id == id);
+
+            if(found == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(found);
         }
     }
 }
