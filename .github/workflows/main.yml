@@ -5,7 +5,7 @@ env:
   AZURE_WEBAPP_NAME: "GitActionAPI"
 
 jobs:
-  build:
+  Build:
    runs-on: windows-latest
    steps:
      - name: CheckingOut Repository
@@ -21,7 +21,13 @@ jobs:
        
      - name: Build
        run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
-
+  Test:
+    needs: Build
+    runs-on: windows-latest
+    steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
+       
      - name: Install TestCase dependencies
        run: dotnet restore ./TestingGitAPI/TestingGitAPI.csproj
        
@@ -31,6 +37,13 @@ jobs:
      - name: Notify on Test Failure
        if: failure()
        run: echo "Tests failed! Fix errors before deployment."
+       
+  Deploy:
+    needs: Test
+    runs-on: windows-latest
+    steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
        
      - name: Publish
        run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ./publish
