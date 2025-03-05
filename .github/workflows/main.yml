@@ -21,6 +21,9 @@ jobs:
        
      - name: Build
        run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
+
+     - name: Install TestCase dependencies
+       run: dotnet restore ./TestingGitAPI/TestingGitAPI.csproj
        
      - name: Run Unit Tests
        run: dotnet test --configuration Release --no-restore --verbosity normal
