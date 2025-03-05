@@ -24,8 +24,7 @@ jobs:
   Test:
     needs: Build
     runs-on: windows-latest
-    environment: 
-      name: development
+   
     steps:
      - name: CheckingOut Repository
        uses: actions/checkout@v3
@@ -43,6 +42,10 @@ jobs:
   Deploy:
     needs: Test
     runs-on: windows-latest
+
+     environment: 
+      name: development
+      
     steps:
      - name: CheckingOut Repository
        uses: actions/checkout@v3
