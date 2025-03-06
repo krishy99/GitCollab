@@ -1,0 +1,33 @@
+name: Deployment
+on:
+  workflow_call:
+    inputs: 
+      package_name:
+        required: true
+        type: string
+      app-name:
+        required: true
+        type: string
+      deployment-slot:
+        required: true
+        type: string
+    secrets:
+      azure-profile:
+        required: false
+jobs:
+   Deploy:
+      runs-on: windows-latest
+      environment: 
+        name: development
+      steps:
+       - name: Download artifact from build job
+         uses: actions/download-artifact@v4
+         with:
+           name: ${{inputs.package_name}}
+
+       - name: Deploy
+         uses: azure/webapps-deploy@v2
+         with:
+           app-name: ${{inputs.app-name}}
+           publish-profile: ${{secrets.azure-profile}}
+           package: ${{inputs.deployment-slot}}
