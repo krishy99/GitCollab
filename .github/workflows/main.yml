@@ -50,14 +50,26 @@ jobs:
        uses: actions/checkout@v3
        
      - name: Publish
-       run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ./publish
+       run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ${{env.DOTNET_ROOT}}/myapp
+
+     - name: upload artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: .net-app
+         path: ${{env.DOTNET_ROOT}}/myapp
+         
+     - name: Download artifact from build job
+       uses: actions/download-artifact@v4
+       with:
+         name: .net-app
+
 
      - name: Deploy
        uses: azure/webapps-deploy@v2
        with:
          app-name: ${{env.AZURE_WEBAPP_NAME}}
          publish-profile: ${{secrets.AZURE_PUBLISH_KEY}}
-         package: ./publish
+         package: ${{env.DOTNET_ROOT}}/myapp
 
      
    
