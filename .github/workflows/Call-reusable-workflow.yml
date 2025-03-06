@@ -1,0 +1,74 @@
+name: Callreusableworkflow
+on:
+  workflow_dispatch
+env:
+  AZURE_WEBAPP_NAME: "GitActionAPI"
+
+jobs:
+  Build:
+   runs-on: windows-latest
+   steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
+       
+     - name: build-app
+       uses: actions/setup-dotnet@v3
+       with:
+         dotnet-version: 8.0.x
+         
+     - name: Install dependencies
+       run: dotnet restore ./GitCollab/GitCollab.csproj
+       
+     - name: Build
+       run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
+  Test:
+    needs: Build
+    runs-on: windows-latest
+   
+    steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
+       
+     - name: Install TestCase dependencies
+       run: dotnet restore ./TestingGitAPI/TestingGitAPI.csproj
+       
+     - name: Run Unit Tests
+       run: dotnet test --configuration Release --no-restore --verbosity normal
+       
+     - name: Notify on Test Failure
+       if: failure()
+       run: echo "Tests failed! Fix errors before deployment."
+       
+  Publish:
+    needs: Test
+    runs-on: windows-latest
+    
+    environment: 
+      name: development
+    steps:
+     - name: CheckingOut Repository
+       uses: actions/checkout@v3
+       
+     - name: Publish
+       run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ${{env.DOTNET_ROOT}}/myapp
+
+     - name: upload artifact
+       uses: actions/upload-artifact@v4
+       with:
+         name: .net-app
+         path: ${{env.DOTNET_ROOT}}/myapp
+         
+     - name: Download artifact from build job
+       uses: actions/download-artifact@v4
+       with:
+         name: .net-app
+  call-reusable-deployworkflow:
+    needs: Publish
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      package_name: .net-app
+      app-name:  ${{env.AZURE_WEBAPP_NAME}}
+      deployment-slot: ${{env.DOTNET_ROOT}}/myapp
+    secrets:
+      azure-profile: ${{secrets.AZURE_PUBLISH_KEY}}
+
