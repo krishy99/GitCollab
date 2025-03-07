@@ -64,10 +64,11 @@ jobs:
 
   call-reusable-deployworkflow:
     needs: Publish
+   
     uses: ./.github/workflows/reusable-deploy.yml
     with:
       package_name: .net-app
       app-name: GitActionAPI
-      deployment-slot: d:/myapp
+      deployment-slot: D:/myapp
     secrets:
       azure-profile: ${{ secrets.AZURE_PUBLISH_KEY }}
