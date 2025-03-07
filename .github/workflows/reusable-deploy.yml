@@ -30,4 +30,4 @@ jobs:
          with:
            app-name: ${{inputs.app-name}}
            publish-profile: ${{secrets.azure-profile}}
-           package: ${{inputs.deployment-slot}}
+           package: .
