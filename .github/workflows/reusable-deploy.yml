@@ -19,6 +19,7 @@ jobs:
       runs-on: windows-latest
       environment: 
         name: development
+        url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
       steps:
        - name: Download artifact from build job
          uses: actions/download-artifact@v4
@@ -26,8 +27,9 @@ jobs:
            name: ${{inputs.package_name}}
 
        - name: Deploy
-         uses: azure/webapps-deploy@v2
+         id: deploy-to-webapp
+         uses: azure/webapps-deploy@v3
          with:
-           app-name: ${{inputs.app-name}}
-           publish-profile: ${{secrets.azure-profile}}
+           app-name: ${{ inputs.app-name }}
+           publish-profile: ${{ secrets.azure-profile }}
            package: .
