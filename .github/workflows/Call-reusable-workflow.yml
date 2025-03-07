@@ -67,7 +67,7 @@ jobs:
     uses: ./.github/workflows/reusable-deploy.yml
     with:
       package_name: .net-app
-      app-name: ${{ env.AZURE_WEBAPP_NAME }}
+      app-name: GitActionAPI
       deployment-slot: ${{ env.DOTNET_ROOT }}/myapp
     secrets:
       azure-profile: ${{ secrets.AZURE_PUBLISH_KEY }}
