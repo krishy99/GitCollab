@@ -1,6 +1,5 @@
 name: Callreusableworkflow
-on:
-  workflow_dispatch
+on: [pull_request,push,issues,workflow_dispatch]
 env:
   AZURE_WEBAPP_NAME: "GitActionAPI"
   
@@ -8,6 +7,8 @@ jobs:
   Build:
     runs-on: windows-latest
     steps:
+      - name: catch Event Name
+        run: echo "Event that triggered the work flow is ${{ github.event_name }}"
       - name: CheckingOut Repository
         uses: actions/checkout@v3
         
