@@ -1,0 +1,13 @@
+name: cd-on-deploy
+
+on:
+  deployment:
+
+jobs:
+  alerts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: alert running
+        run: |
+          echo "sending slack alert to get  deploy approved.."
+          echo "${{ toJson(github.event) }}"
