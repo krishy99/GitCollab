@@ -13,7 +13,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["GitCollab.csproj", "./"]
-RUN dotnet restore "./GitCollab/GitCollab.csproj"
+RUN dotnet restore "GitCollab.csproj"
 COPY . .
 WORKDIR "/src/GitCollab"
 RUN dotnet build "./GitCollab.csproj" -c $BUILD_CONFIGURATION -o /app/build
