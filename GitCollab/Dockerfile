@@ -16,7 +16,7 @@ COPY ["GitCollab.csproj", "./"]
 RUN dotnet restore "GitCollab.csproj"
 COPY . .
 WORKDIR "/src/GitCollab"
-RUN dotnet build "GitCollab.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "GitCollab.csproj" -c Release -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
