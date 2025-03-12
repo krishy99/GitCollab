@@ -1,8 +1,9 @@
-name: Callreusableworkflow
+name: dockerpush
 on: [pull_request,push,issues,workflow_dispatch]
 env:
   AZURE_WEBAPP_NAME: "GitActionAPI"
-  
+  AZURE_CONTAINER_NAME: "gitcollabapi"
+  IMAGE_NAME: gitcollabapi
 jobs:
   Build:
     runs-on: windows-latest
@@ -40,36 +41,24 @@ jobs:
         if: failure()
         run: echo "Tests failed! Fix errors before deployment."
         
-  Publish:
+  build-and-push:
     needs: Test
-    runs-on: windows-latest
-    environment: 
-      name: development
+    runs-on: ubuntu-latest
+   
     steps:
       - name: CheckingOut Repository
         uses: actions/checkout@v3
         
-      - name: Publish
-        run: dotnet publish ./GitCollab/GitCollab.csproj --configuration Release --output ${{ env.DOTNET_ROOT }}/myapp
+      - name: Log in to Azure Container Registry
+        run: |
+          echo "${{ secrets.AZURE_REGISTRY_PASSWORD}}" | docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.AZURE_REGISTRY_USERNAME}} --password-stdin
 
-      - name: upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: ${{ env.DOTNET_ROOT }}/myapp
-          
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
+      - name: Build and Tag Docker Image
+        run: |
+          docker build -t ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:${{ github.sha }} .
+          docker tag ${{ secrets.AZURE_CONTAINER_REGISTRY  }}/$IMAGE_NAME:${{ github.sha }} ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:latest
 
-  call-reusable-deployworkflow:
-    needs: Publish
-   
-    uses: ./.github/workflows/reusable-deploy.yml
-    with:
-      package_name: .net-app
-      app-name: GitActionAPI
-      deployment-slot: D:/myapp
-    secrets:
-      azure-profile: ${{ secrets.AZURE_PUBLISH_KEY }}
+      - name: Push Docker Image to ACR
+        run: |
+          docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:${ github.sha }}
+          docker push ${{ secrets.AZURE_CONTAINER_REGISTRY }}/$IMAGE_NAME:latest
