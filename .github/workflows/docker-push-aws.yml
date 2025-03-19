@@ -1,53 +1,19 @@
 name: dockerpushaws
 on: [pull_request,push,issues,workflow_dispatch]
-env:
-  AZURE_WEBAPP_NAME: "GitActionAPI"
-  AZURE_CONTAINER_NAME: "gitcollabapi"
-  IMAGE_NAME: gitcollabapi
-jobs:
-  Build:
-    runs-on: windows-latest
-    steps:
-      - name: catch Event Name
-        run: echo "Event that triggered the work flow is ${{ github.event_name }}"
-      - name: CheckingOut Repository
-        uses: actions/checkout@v3
-        
-      - name: build-app
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0.x
-          
-      - name: Install dependencies
-        run: dotnet restore ./GitCollab/GitCollab.csproj
-        
-      - name: Build
-        run: dotnet build ./GitCollab/GitCollab.csproj --configuration Release --no-restore
 
-  Test:
-    needs: Build
-    runs-on: windows-latest
-    steps:
-      - name: CheckingOut Repository
-        uses: actions/checkout@v3
-        
-      - name: Install TestCase dependencies
-        run: dotnet restore ./TestingGitAPI/TestingGitAPI.csproj
-        
-      - name: Run Unit Tests
-        run: dotnet test --configuration Release --no-restore --verbosity normal
-        
-      - name: Notify on Test Failure
-        if: failure()
-        run: echo "Tests failed! Fix errors before deployment."
-        
+jobs:
   build-and-push:
-    needs: Test
     runs-on: ubuntu-latest
-   
     steps:
       - name: CheckingOut Repository
         uses: actions/checkout@v3
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Log in to AWS ECR
         uses: aws-actions/amazon-ecr-login@v1
